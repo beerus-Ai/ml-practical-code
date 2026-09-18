@@ -4,9 +4,9 @@ Machine Learning practical exercises — all seven algorithms in one notebook, w
 
 ## Download the notebook
 
-**[ML_Practical_Code.ipynb](https://github.com/beerus-Ai/ml-practical-code/raw/main/ML_Practical_Code.ipynb)** — click to download
+**[cheeseballs.ipynb](https://github.com/beerus-Ai/ml-practical-code/releases/download/v1.0/cheeseballs.ipynb)** — click to download
 
-Or [view it rendered on GitHub](ML_Practical_Code.ipynb).
+Or [view it rendered on GitHub](cheeseballs.ipynb).
 
 ## Contents
 
@@ -20,7 +20,7 @@ Or [view it rendered on GitHub](ML_Practical_Code.ipynb).
 | Sentiment Analysis | tweets_dataset | Accuracy = 0.56 |
 | ARIMA | tourism_data_2005_onwards | MAPE = 6.22% |
 
-`ML_Practical_Code.ipynb` runs everything from the repo root. Each exercise also has its own notebook inside its folder.
+`cheeseballs.ipynb` runs everything from the repo root. Each exercise also has its own notebook inside its folder.
 
 ## Requirements
 
