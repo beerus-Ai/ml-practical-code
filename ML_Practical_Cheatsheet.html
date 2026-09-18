@@ -1,0 +1,644 @@
+<title>ML Practical Code</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{
+  --ground:#F0F3F1; --ink:#141A18; --muted:#5C6B66; --line:#D2DAD6; --accent:#1B6A56;
+  --code-bg:#11201C; --code-ink:#DCE7E2; --code-comment:#6E8F84;
+  --code-str:#C9B06B; --code-kw:#6FC3A5; --code-num:#E39B6B;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0D1211; --ink:#E1E8E5; --muted:#8FA09A; --line:#2A3431; --accent:#59BC9E;
+  --code-bg:#0A100E; --code-ink:#D5E1DC;
+}}
+:root[data-theme="dark"]{
+  --ground:#0D1211; --ink:#E1E8E5; --muted:#8FA09A; --line:#2A3431; --accent:#59BC9E;
+  --code-bg:#0A100E; --code-ink:#D5E1DC;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding-inline:20px;padding-block:40px 80px}
+h1{font-size:clamp(26px,5vw,38px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px}
+h2{font-size:clamp(19px,3.4vw,24px);font-weight:700;letter-spacing:-.015em;
+  margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.sub{color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:12px;margin:0 0 30px}
+section{margin-bottom:44px;scroll-margin-top:16px}
+.file{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--muted);margin:-4px 0 12px}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:38px}
+nav a{font-family:"JetBrains Mono",monospace;font-size:11.5px;text-decoration:none;
+  color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+nav a:hover,nav a:focus-visible{color:var(--accent);border-color:var(--accent)}
+figure{margin:0;border-radius:8px;overflow:hidden;background:var(--code-bg)}
+figcaption{display:flex;justify-content:flex-end;padding:8px 10px;
+  border-bottom:1px solid rgba(255,255,255,.08)}
+button{background:transparent;border:1px solid rgba(255,255,255,.16);color:var(--code-ink);
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;padding:4px 9px;border-radius:4px;cursor:pointer}
+button:hover{border-color:var(--code-kw);color:var(--code-kw)}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+pre{margin:0;padding:16px 14px;overflow-x:auto;color:var(--code-ink);
+  font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;font-size:13px;line-height:1.6}
+.tk-c{color:var(--code-comment);font-style:italic}
+.tk-s{color:var(--code-str)}
+.tk-k{color:var(--code-kw)}
+.tk-n{color:var(--code-num)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<h1>ML Practical Code</h1>
+<p class="sub">7 exercises · all code in one place</p>
+
+<nav>
+  <a href="#linear">Linear Regression</a>
+  <a href="#logistic">Logistic Regression</a>
+  <a href="#tree">Decision Tree</a>
+  <a href="#forest">Random Forest</a>
+  <a href="#knn">KNN</a>
+  <a href="#sentiment">Sentiment Analysis</a>
+  <a href="#arima">ARIMA</a>
+</nav>
+
+<section id="linear">
+<h2>Linear Regression</h2>
+<p class="file">mba_salary_data_ (1).csv</p>
+<figure><figcaption><button type="button">Copy</button></figcaption>
+<pre><code># Step 1: Import libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, mean_squared_error
+
+# Step 2: Load the dataset
+df = pd.read_csv("mba_salary_data_ (1).csv")
+df.head()
+
+# Step 3: Explore the data
+df.shape          # rows and columns
+df.describe()     # mean, min, max, quartiles
+df.info()         # data types and null counts
+
+# Step 4: Features (X) and target (y)
+# Double brackets keep X 2-D, which sklearn requires
+X = df[["MBA_Percentage"]]
+y = df["Salary_Package (in LPA)"]
+
+# Step 5: Scatter plot to check the relationship is linear
+plt.scatter(X, y)
+plt.xlabel("MBA Percentage")
+plt.ylabel("Salary Package (LPA)")
+plt.show()
+
+# Step 6: Split into training and testing data (80% / 20%)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+# Step 7: Train the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Step 8: The fitted line  y = mx + c
+print("Slope (m):", model.coef_[0])
+print("Intercept (c):", model.intercept_)
+
+# Step 9: Predict on the test set
+y_pred = model.predict(X_test)
+
+# Step 10: Evaluate
+# R2 = how much of the salary variation the model explains (1.0 is perfect)
+# RMSE = average error, in LPA
+print("R2 Score:", r2_score(y_test, y_pred))
+print("RMSE:", np.sqrt(mean_squared_error(y_test, y_pred)))
+
+# Step 11: Plot the regression line over the actual points
+plt.scatter(X_test, y_test, label="Actual")
+plt.plot(X_test, y_pred, color="red", label="Predicted line")
+plt.xlabel("MBA Percentage")
+plt.ylabel("Salary Package (LPA)")
+plt.legend()
+plt.show()
+
+# Step 12: Predict the salary of a new student
+new_student = pd.DataFrame({"MBA_Percentage": [85]})
+print("Predicted salary for 85%:", model.predict(new_student)[0])</code></pre></figure>
+</section>
+
+<section id="logistic">
+<h2>Logistic Regression</h2>
+<p class="file">german_credit_risk (1).csv</p>
+<figure><figcaption><button type="button">Copy</button></figcaption>
+<pre><code># Step 1: Import libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Step 2: Load the dataset
+df = pd.read_csv("german_credit_risk (1).csv")
+df.head()
+df.shape
+
+# Step 3: Remove the unnamed index column
+df = df.drop("Unnamed: 0", axis=1)
+df.isnull().sum()     # Saving accounts and Checking account have missing values
+
+# Step 4: Fill missing categorical values with the mode (most common value)
+cat_cols = ["Sex", "Housing", "Saving accounts",
+            "Checking account", "Purpose"]
+
+for col in cat_cols:
+    df[col] = df[col].fillna(df[col].mode()[0])
+
+# Step 5: Convert categorical columns into dummy (0/1) variables
+# drop_first=True avoids the dummy variable trap
+df = pd.get_dummies(df, columns=cat_cols, drop_first=True)
+
+# Step 6: Convert the target into numbers
+df["Risk"] = df["Risk"].map({"bad": 0, "good": 1})
+
+# Step 7: Features (X) and target (y)
+X = df.drop("Risk", axis=1)
+y = df["Risk"]
+
+# Step 8: Split the data
+# stratify=y keeps the same good/bad ratio in train and test
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.20, random_state=42, stratify=y)
+
+# Step 9: Feature scaling
+# fit_transform on train only, transform on test (never fit on test data)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Step 10: Train the model
+# max_iter=1000 stops the convergence warning
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train_scaled, y_train)
+
+# Step 11: Predict on the test set
+y_pred = model.predict(X_test_scaled)
+
+# Step 12: Evaluate
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))            # rows = actual, columns = predicted
+print(classification_report(y_test, y_pred))       # precision, recall, f1-score
+
+# Step 13: Create a new customer
+new_customer = pd.DataFrame({
+    "Age": [30],
+    "Sex": ["male"],
+    "Job": [2],
+    "Housing": ["own"],
+    "Saving accounts": ["little"],
+    "Checking account": ["moderate"],
+    "Credit amount": [4000],
+    "Duration": [24],
+    "Purpose": ["car"]
+})
+
+# Step 14: Apply the SAME preprocessing used on the training data
+# reindex forces the new row to have exactly the training columns
+new_customer = pd.get_dummies(new_customer, columns=cat_cols, drop_first=True)
+new_customer = new_customer.reindex(columns=X.columns, fill_value=0)
+
+# Step 15: Scale with the same scaler, then predict
+new_customer_scaled = scaler.transform(new_customer)
+prediction = model.predict(new_customer_scaled)
+
+if prediction[0] == 1:
+    print("Prediction: GOOD CREDIT RISK")
+else:
+    print("Prediction: BAD CREDIT RISK")
+
+# Step 16: Probability of each class (column 1 = good risk)
+probability = model.predict_proba(new_customer_scaled)
+print("Probability of Good Risk:", probability[0][1])</code></pre></figure>
+</section>
+
+<section id="tree">
+<h2>Decision Tree</h2>
+<p class="file">Iris (1).csv</p>
+<figure><figcaption><button type="button">Copy</button></figcaption>
+<pre><code># Step 1: Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+# Step 2: Load the dataset
+df = pd.read_csv("Iris (1).csv")
+df.head()
+
+# Step 3: Explore the data
+df.shape
+df.describe()
+df.info()
+
+# Step 4: Features (X) and target (Y)
+# Id is just a row number, so it is left out
+X = df[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]]
+Y = df["Species"]
+
+# Step 5: Split into training and testing data
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X, Y, test_size=0.2, random_state=42)
+
+# Step 6: Train the model
+# criterion="gini" measures node impurity (entropy is the alternative)
+# Trees do not need feature scaling
+model = DecisionTreeClassifier(criterion="gini", random_state=42)
+model.fit(X_train, Y_train)
+
+# Step 7: Predict
+Y_pred = model.predict(X_test)
+
+# Step 8: Evaluate
+print("Accuracy:", accuracy_score(Y_test, Y_pred))
+
+cm = confusion_matrix(Y_test, Y_pred)
+print("confusion matrix:", cm)
+
+# Step 9: Draw the tree so the decision rules can be read
+plt.figure(figsize=(15, 10))
+plot_tree(model,
+          feature_names=X.columns,
+          class_names=model.classes_,
+          filled=True)
+plt.show()</code></pre></figure>
+</section>
+
+<section id="forest">
+<h2>Random Forest</h2>
+<p class="file">wine (1).csv</p>
+<figure><figcaption><button type="button">Copy</button></figcaption>
+<pre><code># Step 1: Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.tree import plot_tree
+
+# Step 2: Load the dataset
+df = pd.read_csv("wine (1).csv")
+df.head()
+df.shape
+
+# Step 3: Features (X) and target (y)
+# "Wine" is the cultivar: class 1, 2 or 3
+X = df.drop(columns=['Wine'])
+y = df['Wine']
+
+# Step 4: Split into training and testing data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+# Step 5: Train the forest
+# n_estimators=100 means 100 trees vote on each prediction
+rf = RandomForestClassifier(n_estimators=100, random_state=42)
+rf.fit(X_train, y_train)
+
+# Step 6: Predict
+y_pred = rf.predict(X_test)
+
+# Step 7: Evaluate
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print(classification_report(y_test, y_pred))
+
+# Step 8: Feature importances - which chemicals decide the cultivar
+plt.figure(figsize=(10, 6))
+sns.barplot(x=rf.feature_importances_, y=X.columns)
+plt.title("Feature Importances in Random Forest")
+plt.xlabel("Importance Score")
+plt.ylabel("Features")
+plt.tight_layout()
+plt.show()
+
+# Step 9: Visualise one single tree out of the 100
+plt.figure(figsize=(20, 10))
+plot_tree(rf.estimators_[0],
+          filled=True,
+          feature_names=X.columns,
+          class_names=[str(cls) for cls in rf.classes_],
+          rounded=True,
+          fontsize=10)
+plt.show()</code></pre></figure>
+</section>
+
+<section id="knn">
+<h2>KNN</h2>
+<p class="file">Customer_Churn_Dataset (1).csv</p>
+<figure><figcaption><button type="button">Copy</button></figcaption>
+<pre><code># Step 1: Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Step 2: Load the dataset
+df = pd.read_csv("Customer_Churn_Dataset (1).csv")
+df.head()
+df.shape
+df.info()
+
+# Step 3: Drop the ID column - it carries no information
+df = df.drop("CustomerID", axis=1)
+
+# Step 4: Convert the target into numbers
+df["Churn"] = df["Churn"].map({"No": 0, "Yes": 1})
+
+# Step 5: Convert all remaining text columns into dummy variables
+cat_cols = df.select_dtypes(include="object").columns
+df = pd.get_dummies(df, columns=cat_cols, drop_first=True)
+
+# Step 6: Features (X) and target (y)
+X = df.drop("Churn", axis=1)
+y = df["Churn"]
+
+# Step 7: Split the data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+
+# Step 8: Feature scaling - COMPULSORY for KNN
+# KNN measures distance, so TotalCharges (thousands) would otherwise
+# completely outweigh columns like SeniorCitizen (0 or 1)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Step 9: Train the model with K = 5 neighbours
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train_scaled, y_train)
+
+# Step 10: Predict
+y_pred = knn.predict(X_test_scaled)
+
+# Step 11: Evaluate
+print("Accuracy:", accuracy_score(y_test, y_pred))
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+print(classification_report(y_test, y_pred))
+
+# Step 12: Confusion matrix heatmap
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+            xticklabels=["No Churn", "Churn"],
+            yticklabels=["No Churn", "Churn"])
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+# Step 13: Try K from 1 to 20 and pick the best one
+scores = []
+
+for k in range(1, 21):
+    m = KNeighborsClassifier(n_neighbors=k)
+    m.fit(X_train_scaled, y_train)
+    scores.append(accuracy_score(y_test, m.predict(X_test_scaled)))
+
+plt.plot(range(1, 21), scores, marker="o")
+plt.xlabel("K")
+plt.ylabel("Accuracy")
+plt.show()
+
+print("Best K:", scores.index(max(scores)) + 1)</code></pre></figure>
+</section>
+
+<section id="sentiment">
+<h2>Sentiment Analysis</h2>
+<p class="file">tweets_dataset.csv &nbsp;·&nbsp; pip install wordcloud</p>
+<figure><figcaption><button type="button">Copy</button></figcaption>
+<pre><code># Step 1: Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from wordcloud import WordCloud
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (accuracy_score, precision_score,
+                             recall_score, f1_score, confusion_matrix)
+
+# Step 2: Load the dataset
+df = pd.read_csv("tweets_dataset.csv")
+df.head()
+df.shape
+
+# Step 3: Prepare the data
+# fillna("") avoids errors on empty tweets, lower/strip cleans the labels
+X = df["tweet"].fillna("")
+y = df["sentiment"].str.lower().str.strip()
+
+# Step 4: Train-test split (70% / 30%)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.30, random_state=42, stratify=y)
+
+print("Training data:", len(X_train))
+print("Testing data :", len(X_test))
+
+# Step 5: TF-IDF - convert the text into numbers
+# A word scores high if it is common in one tweet but rare overall
+tfidf = TfidfVectorizer()
+X_train_tfidf = tfidf.fit_transform(X_train)
+X_test_tfidf = tfidf.transform(X_test)
+
+print("Number of TF-IDF features:", X_train_tfidf.shape[1])
+
+# Step 6: Train the model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train_tfidf, y_train)
+
+# Step 7: Predict
+y_pred = model.predict(X_test_tfidf)
+
+# Step 8: Evaluate
+# pos_label="positive" is needed because the labels are text, not 0/1
+print("Accuracy :", accuracy_score(y_test, y_pred))
+print("Precision:", precision_score(y_test, y_pred, pos_label="positive", zero_division=0))
+print("Recall   :", recall_score(y_test, y_pred, pos_label="positive", zero_division=0))
+print("F1 Score :", f1_score(y_test, y_pred, pos_label="positive", zero_division=0))
+
+# Step 9: Confusion matrix heatmap
+cm = confusion_matrix(y_test, y_pred)
+
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+            xticklabels=["Negative", "Positive"],
+            yticklabels=["Negative", "Positive"])
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+# Step 10: Word cloud of all tweets - bigger word = more frequent
+all_text = " ".join(df["tweet"].astype(str))
+wordcloud = WordCloud(width=800, height=400,
+                      background_color="white").generate(all_text)
+
+plt.figure(figsize=(10, 5))
+plt.imshow(wordcloud, interpolation="bilinear")
+plt.axis("off")
+plt.show()
+
+# Step 11: Separate word clouds for positive and negative tweets
+positive_text = " ".join(df[df["sentiment"] == "positive"]["tweet"].astype(str))
+negative_text = " ".join(df[df["sentiment"] == "negative"]["tweet"].astype(str))
+
+for text, title in [(positive_text, "Positive Word Cloud"),
+                    (negative_text, "Negative Word Cloud")]:
+    wc = WordCloud(width=800, height=400,
+                   background_color="white").generate(text)
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wc, interpolation="bilinear")
+    plt.axis("off")
+    plt.title(title)
+    plt.show()
+
+# Step 12: Predict the sentiment of a new review
+# transform only - never fit_transform on new data
+new_review = ["I really enjoyed this product. It is excellent!"]
+print("Predicted Sentiment:", model.predict(tfidf.transform(new_review))[0])</code></pre></figure>
+</section>
+
+<section id="arima">
+<h2>ARIMA</h2>
+<p class="file">tourism_data_2005_onwards (1).csv</p>
+<figure><figcaption><button type="button">Copy</button></figcaption>
+<pre><code># Step 1: Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_absolute_percentage_error
+
+# Step 2: Load the dataset
+df = pd.read_csv("tourism_data_2005_onwards (1).csv")
+df.head()
+df.shape
+
+# Step 3: Turn the Month column into a time-series index
+# dayfirst=True because the dates are DD-MM-YYYY
+df["Month"] = pd.to_datetime(df["Month"], dayfirst=True)
+df = df.sort_values("Month")
+df["Month"] = df["Month"].dt.to_period("M").dt.to_timestamp()
+df = df.set_index("Month")
+
+tourists = df["Tourists"].astype(float)
+
+# Step 4: Plot the series - look for trend and seasonality
+plt.figure(figsize=(10, 4))
+plt.plot(tourists)
+plt.title("Monthly Tourist Arrivals")
+plt.xlabel("Month")
+plt.ylabel("Tourists")
+plt.show()
+
+# Step 5: Decomposition into trend + seasonal + residual
+# period=12 because the data is monthly
+result = seasonal_decompose(tourists, model="additive", period=12)
+result.plot()
+plt.show()
+
+# Step 6: Split the data CHRONOLOGICALLY - never shuffle a time series
+# The last 24 months are the test set
+train = tourists[:-24]
+test = tourists[-24:]
+
+print("Training data:", len(train))
+print("Testing data :", len(test))
+
+# Step 7: Build the ARIMA model
+# order = (p, d, q):  p = AR lags, d = differencing, q = MA terms
+model = ARIMA(train, order=(1, 1, 1))
+model_fit = model.fit()
+print(model_fit.summary())
+
+# Step 8: Forecast the same number of months as the test set
+forecast = model_fit.forecast(steps=len(test))
+forecast.index = test.index      # match the dates so they plot together
+print(forecast)
+
+# Step 9: MAPE - the average error as a percentage
+mape = mean_absolute_percentage_error(test, forecast) * 100
+print("MAPE:", round(mape, 2), "%")
+
+# Step 10: Plot actual vs forecast
+plt.figure(figsize=(10, 5))
+plt.plot(test.index, test, label="Actual")
+plt.plot(forecast.index, forecast, label="Forecast")
+plt.xlabel("Month")
+plt.ylabel("Tourists")
+plt.legend()
+plt.show()
+
+# Step 11: Interpretation - under 10% MAPE is a good forecast
+if mape &lt; 10:
+    print("The forecast has good accuracy.")
+else:
+    print("The forecast has higher error.")
+
+# Step 12: Actual and forecast side by side
+result_df = pd.DataFrame({"Actual": test, "Forecast": forecast})
+print(result_df.round(2))</code></pre></figure>
+</section>
+</div>
+
+<script>
+(function () {
+  var KW = "import|from|as|def|return|if|elif|else|for|in|not|and|or|None|True|False|lambda|with|print|range";
+  var RE = new RegExp(
+    "(#[^\\n]*)" +
+    "|(\"(?:[^\"\\\\\\n]|\\\\.)*\"|'(?:[^'\\\\\\n]|\\\\.)*')" +
+    "|\\b(" + KW + ")\\b" +
+    "|\\b(\\d+\\.?\\d*)\\b", "g");
+
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  document.querySelectorAll("pre code").forEach(function (el) {
+    var raw = el.textContent;
+    el.dataset.raw = raw;
+    el.innerHTML = esc(raw).replace(RE, function (m, c, s, k, n) {
+      if (c) return '<span class="tk-c">' + c + "</span>";
+      if (s) return '<span class="tk-s">' + s + "</span>";
+      if (k) return '<span class="tk-k">' + k + "</span>";
+      if (n) return '<span class="tk-n">' + n + "</span>";
+      return m;
+    });
+  });
+
+  document.querySelectorAll("button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var code = btn.closest("figure").querySelector("code");
+      var text = code.dataset.raw || code.textContent;
+      function done() {
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = "Copy"; }, 1500);
+      }
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+    });
+  });
+})();
+</script>
