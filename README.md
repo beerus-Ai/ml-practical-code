@@ -22,6 +22,22 @@ Or [view it rendered on GitHub](cheeseballs.ipynb).
 
 `cheeseballs.ipynb` runs everything from the repo root. Each exercise also has its own notebook inside its folder.
 
+## Exam prep
+
+`exam prep/` holds one notebook per question of the September 2025 end-term paper
+(ITS2209), each with a Settings cell at the top so you only change the filename,
+target column and split ratio on the day.
+
+| Notebook | Topic |
+|---|---|
+| `Q1.ipynb` | Boston Housing — pre-processing + multiple linear regression (MSE, RMSE, MAE) |
+| `Q2.ipynb` | Loan Prediction — decision tree (accuracy, precision, recall, F1) |
+| `Q3.ipynb` | IMDB Reviews — TF-IDF **and** CountVectorizer + logistic regression |
+| `Q4.ipynb` | Airline Passengers — ARIMA forecasting with MAPE, plus SARIMA |
+
+`Data_Q1.csv`–`Data_Q4.csv` are stand-in datasets at the exact shapes the paper
+specifies, so the notebooks run as-is. See `exam prep/README.md` for details.
+
 ## Requirements
 
 ```
